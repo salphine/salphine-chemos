@@ -135,9 +135,9 @@ def show_login():
             
             col_a, col_b = st.columns(2)
             with col_a:
-                login_btn = st.button("🚀 Login", use_container_width=True, type="primary")
+                login_btn = st.button("🚀 Login", width='stretch', type="primary")
             with col_b:
-                reset_btn = st.button("🔄 Reset", use_container_width=True)
+                reset_btn = st.button("🔄 Reset", width='stretch')
             
             if login_btn:
                 if username and password:
@@ -284,7 +284,7 @@ def show_dashboard():
             })
         
         df_alerts = pd.DataFrame(alert_data)
-        st.dataframe(df_alerts, use_container_width=True, hide_index=True)
+        st.dataframe(df_alerts, width='stretch', hide_index=True)
     else:
         st.success("🎉 All products have sufficient stock levels!")
 
@@ -356,7 +356,7 @@ def show_sales_processing():
                     qty = st.number_input(f"Quantity", min_value=1, max_value=product['stock_quantity'], 
                                          value=1, key=f"qty_{product['id']}")
                     
-                    if st.button(f"➕ Add to Cart", key=f"add_{product['id']}", use_container_width=True):
+                    if st.button(f"➕ Add to Cart", key=f"add_{product['id']}", width='stretch'):
                         cart_item = {
                             'id': product['id'],
                             'name': product['name'],
@@ -420,7 +420,7 @@ def show_sales_processing():
             
             col_btn1, col_btn2 = st.columns(2)
             with col_btn1:
-                if st.button("✅ Complete Sale", use_container_width=True, type="primary"):
+                if st.button("✅ Complete Sale", width='stretch', type="primary"):
                     if customer_name:
                         # Generate receipt
                         receipt_data = {
@@ -450,7 +450,7 @@ def show_sales_processing():
                         st.warning("Please enter customer name")
             
             with col_btn2:
-                if st.button("🗑️ Clear Cart", use_container_width=True, type="secondary"):
+                if st.button("🗑️ Clear Cart", width='stretch', type="secondary"):
                     st.session_state.cart = []
                     st.rerun()
 
@@ -507,10 +507,10 @@ def show_receipt_preview(receipt_data):
     # Export buttons
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("📥 Download PDF Receipt"):
+        if st.button("📥 Download PDF Receipt", width='stretch'):
             generate_pdf_receipt(receipt_data)
     with col2:
-        if st.button("📊 Export to Excel"):
+        if st.button("📊 Export to Excel", width='stretch'):
             generate_excel_receipt(receipt_data)
 
 def generate_pdf_receipt(receipt_data):
@@ -683,9 +683,9 @@ def show_inventory():
                 color = '#EF4444'
             return f'color: {color}; font-weight: bold'
         
-        styled_df = df_inventory.style.applymap(color_status, subset=['Status'])
+        styled_df = df_inventory.style.map(color_status, subset=['Status'])
         
-        st.dataframe(styled_df, use_container_width=True, hide_index=True)
+        st.dataframe(styled_df, width='stretch', hide_index=True)
         
         # Stock level visualization
         st.markdown("### 📊 Stock Level Analysis")
@@ -811,7 +811,7 @@ def show_inventory():
         if filtered:
             df_filtered = pd.DataFrame(filtered)
             st.dataframe(df_filtered[['name', 'category', 'price', 'stock_quantity']], 
-                        use_container_width=True, hide_index=True)
+                        width='stretch', hide_index=True)
         else:
             st.info("No products match your search criteria")
 
@@ -841,7 +841,7 @@ def show_reports():
             with date_col2:
                 end_date = st.date_input("End Date")
     
-    # Generate sample sales data based on selection
+    # Generate sample sales data based on selection - FIXED DATE FORMAT
     dates = pd.date_range(start='2024-01-01', end='2024-01-31', freq='D')
     sales_data = []
     
@@ -851,7 +851,7 @@ def show_reports():
             product = random.choice(products)
             qty = random.randint(1, 5)
             sales_data.append({
-                'date': date,
+                'date': date.strftime('%Y-%m-%d'),  # Convert to string format
                 'product': product['name'],
                 'category': product['category'],
                 'quantity': qty,
@@ -913,7 +913,7 @@ def show_reports():
         }).sort_values('total', ascending=False).head(10)
         
         st.dataframe(top_products.style.format({'total': 'KES {:,.2f}'}), 
-                    use_container_width=True)
+                    width='stretch')
     
     with tab2:
         col1, col2 = st.columns(2)
@@ -975,12 +975,12 @@ def show_reports():
         filtered_df = filtered_df.sort_values(sort_table.lower())
         
         # Display table
-        st.dataframe(filtered_df, use_container_width=True)
+        st.dataframe(filtered_df, width='stretch')
         
         # Summary statistics
         st.markdown("### Summary Statistics")
         summary_stats = filtered_df.describe()
-        st.dataframe(summary_stats, use_container_width=True)
+        st.dataframe(summary_stats, width='stretch')
     
     with tab4:
         st.markdown("### Export Reports")
@@ -1023,7 +1023,7 @@ def show_reports():
         col_btn1, col_btn2, col_btn3 = st.columns(3)
         
         with col_btn1:
-            if st.button("📥 Download CSV", use_container_width=True):
+            if st.button("📥 Download CSV", width='stretch'):
                 csv = export_df.to_csv(index=False)
                 st.download_button(
                     label="⬇️ Click to Download",
@@ -1033,7 +1033,7 @@ def show_reports():
                 )
         
         with col_btn2:
-            if st.button("📊 Download Excel", use_container_width=True):
+            if st.button("📊 Download Excel", width='stretch'):
                 buffer = io.BytesIO()
                 with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
                     export_df.to_excel(writer, index=False, sheet_name='Report')
@@ -1046,7 +1046,7 @@ def show_reports():
                 )
         
         with col_btn3:
-            if st.button("📄 Download PDF", use_container_width=True):
+            if st.button("📄 Download PDF", width='stretch'):
                 st.info("PDF generation would be implemented with reportlab")
 
 # MODULE 6: User Management Interface (Admin Only)
@@ -1089,11 +1089,11 @@ def show_user_management():
             },
             disabled=["ID", "Username", "Role", "Email", "Status", "Last Login"],
             hide_index=True,
-            use_container_width=True
+            width='stretch'
         )
         
         # Actions based on editor
-        if st.button("💾 Save Changes", type="primary"):
+        if st.button("💾 Save Changes", type="primary", width='stretch'):
             st.success("User data updated successfully!")
     
     with tab2:
@@ -1163,10 +1163,10 @@ def show_user_management():
             filtered_logs = filtered_logs[filtered_logs['Action'].isin(log_action)]
         
         # Display logs
-        st.dataframe(filtered_logs, use_container_width=True, hide_index=True)
+        st.dataframe(filtered_logs, width='stretch', hide_index=True)
         
         # Export logs
-        if st.button("📥 Export Activity Logs", type="primary"):
+        if st.button("📥 Export Activity Logs", type="primary", width='stretch'):
             csv = filtered_logs.to_csv(index=False)
             st.download_button(
                 label="⬇️ Download CSV",
@@ -1194,7 +1194,7 @@ def show_user_management():
                     
                     new_status = st.radio("Change Status", ["Active", "Inactive", "Suspended"])
                     
-                    if st.button("🔄 Update Status", type="primary"):
+                    if st.button("🔄 Update Status", type="primary", width='stretch'):
                         st.success(f"Account status updated to: {new_status}")
                 
                 with col2:
@@ -1203,7 +1203,7 @@ def show_user_management():
                     st.write(f"**Current Role:** {user['role']}")
                     new_role = st.selectbox("Assign New Role", ["admin", "manager", "clerk"])
                     
-                    if st.button("👑 Update Role", type="primary"):
+                    if st.button("👑 Update Role", type="primary", width='stretch'):
                         st.success(f"Role updated to: {new_role}")
                 
                 st.markdown("---")
@@ -1212,11 +1212,11 @@ def show_user_management():
                 col_danger1, col_danger2 = st.columns(2)
                 
                 with col_danger1:
-                    if st.button("🔒 Force Password Reset", type="secondary"):
+                    if st.button("🔒 Force Password Reset", type="secondary", width='stretch'):
                         st.warning("Password reset email sent to user.")
                 
                 with col_danger2:
-                    if st.button("🗑️ Delete Account", type="secondary"):
+                    if st.button("🗑️ Delete Account", type="secondary", width='stretch'):
                         st.error("Are you sure you want to delete this account? This action cannot be undone.")
                         confirm = st.checkbox("I confirm I want to delete this account")
                         if confirm:
@@ -1294,7 +1294,7 @@ def show_settings():
             template_style = st.selectbox("Template Style", 
                                          ["Modern", "Classic", "Minimal", "Professional"])
             
-            if st.button("🔄 Update Template", type="primary"):
+            if st.button("🔄 Update Template", type="primary", width='stretch'):
                 st.success("Receipt template updated successfully!")
     
     with tab3:
@@ -1331,7 +1331,7 @@ def show_settings():
                 notification_sound = st.checkbox("Play Notification Sound", value=True)
                 sound_type = st.selectbox("Sound Type", ["Default", "Chime", "Beep", "None"])
         
-        if st.button("🔔 Save Notification Settings", type="primary"):
+        if st.button("🔔 Save Notification Settings", type="primary", width='stretch'):
             st.success("Notification settings updated successfully!")
     
     with tab4:
@@ -1373,18 +1373,18 @@ def show_settings():
         col_maint1, col_maint2, col_maint3 = st.columns(3)
         
         with col_maint1:
-            if st.button("🔄 Clear Cache", type="secondary"):
+            if st.button("🔄 Clear Cache", type="secondary", width='stretch'):
                 st.info("Cache cleared successfully!")
         
         with col_maint2:
-            if st.button("📊 Rebuild Indexes", type="secondary"):
+            if st.button("📊 Rebuild Indexes", type="secondary", width='stretch'):
                 st.info("Database indexes rebuilt successfully!")
         
         with col_maint3:
-            if st.button("🚀 System Diagnostics", type="secondary"):
+            if st.button("🚀 System Diagnostics", type="secondary", width='stretch'):
                 st.info("System diagnostics completed. All systems operational.")
         
-        if st.button("💾 Save All Settings", type="primary"):
+        if st.button("💾 Save All Settings", type="primary", width='stretch'):
             st.success("All system settings saved successfully!")
 
 # MODULE 8: Security Settings
@@ -1505,7 +1505,7 @@ def show_security():
                     can_view_logs = st.checkbox("View System Logs", value=True)
                     can_backup_data = st.checkbox("Backup Data", value=selected_role == 'admin')
             
-            if st.button(f"💾 Save {selected_role} Permissions", type="primary"):
+            if st.button(f"💾 Save {selected_role} Permissions", type="primary", width='stretch'):
                 st.success(f"Permissions for {selected_role} role saved successfully!")
     
     with tab3:
@@ -1537,7 +1537,7 @@ def show_security():
             else:
                 return 'color: #F59E0B; font-weight: bold'
         
-        styled_df = df_security.style.applymap(color_status, subset=['Status'])
+        styled_df = df_security.style.map(color_status, subset=['Status'])
         
         # Filter options
         col_filter1, col_filter2 = st.columns(2)
@@ -1558,14 +1558,14 @@ def show_security():
             filtered_security = filtered_security[filtered_security['Status'].isin(log_status)]
         
         # Display logs
-        st.dataframe(filtered_security.style.applymap(color_status, subset=['Status']), 
-                    use_container_width=True, hide_index=True)
+        st.dataframe(filtered_security.style.map(color_status, subset=['Status']), 
+                    width='stretch', hide_index=True)
         
         # Export and clear logs
         col_export, col_clear = st.columns(2)
         
         with col_export:
-            if st.button("📥 Export Audit Logs", type="primary"):
+            if st.button("📥 Export Audit Logs", type="primary", width='stretch'):
                 csv = filtered_security.to_csv(index=False)
                 st.download_button(
                     label="⬇️ Download CSV",
@@ -1575,7 +1575,7 @@ def show_security():
                 )
         
         with col_clear:
-            if st.button("🗑️ Clear Old Logs", type="secondary"):
+            if st.button("🗑️ Clear Old Logs", type="secondary", width='stretch'):
                 st.warning("This will delete logs older than 90 days. Continue?")
                 if st.checkbox("Yes, clear old logs"):
                     st.info("Old logs cleared successfully!")
@@ -1640,7 +1640,7 @@ def show_security():
             monitor_privileged = st.checkbox("Monitor Privileged Accounts", value=True)
             log_all_access = st.checkbox("Log All Access Attempts", value=True)
         
-        if st.button("🛡️ Apply Security Settings", type="primary"):
+        if st.button("🛡️ Apply Security Settings", type="primary", width='stretch'):
             st.success("Security settings applied successfully!")
             st.info("Some settings may require system restart to take effect")
 
@@ -1761,12 +1761,12 @@ def main():
                 
                 col_btn1, col_btn2 = st.columns(2)
                 with col_btn1:
-                    if st.button("✅ Yes, Logout", use_container_width=True, type="primary"):
+                    if st.button("✅ Yes, Logout", width='stretch', type="primary"):
                         auth.logout()
                         st.success("Logged out successfully!")
                         st.rerun()
                 with col_btn2:
-                    if st.button("❌ Cancel", use_container_width=True):
+                    if st.button("❌ Cancel", width='stretch'):
                         st.session_state.selected_module = "Dashboard"
                         st.rerun()
 
